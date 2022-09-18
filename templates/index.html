@@ -33,7 +33,7 @@ var query_input_field = document.getElementById("query_input_field");
 
 // utility function to send api request to surrealdb
 function query_surrealdb(query){
-    fetch("/api/v1/surrealdb", {
+    fetch("/api/v1/db/read", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
