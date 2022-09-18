@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Surrealdb</title>
+</head>
+<body>
+    <h1>Testing Surrealdb</h1>
+    <div id="query_output">
+        <h2 id="query_output_title">Query Output</h2>
+        <p id="query_output_paragraph"></p>
+    </div>
+    <div id="query_input">
+        <h2 id="query_input">Query Input</h2>
+        <form id="query_input_form">
+            <label for="query_input_label">Query</label>
+            <input type="text" id="query_input_field" name="query_input_field">
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js" integrity="sha512-/hVAZO5POxCKdZMSLefw30xEVwjm94PAV9ynjskGbIpBvHO9EBplEcdUlBdCKutpZsF+La8Ag4gNrG0gAOn3Ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+// initialise variables
+var query_output_title = document.getElementById("query_output_title");
+var query_output_paragraph = document.getElementById("query_output_paragraph");
+var query_input_form = document.getElementById("query_input_form");
+var query_input_field = document.getElementById("query_input_field");
+
+// utility function to send api request to surrealdb
+function query_surrealdb(query){
+    fetch("/api/v1/surrealdb", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            query: query,
+        }),
+    })
+    .then(function (response) {
+        return response.json();
+    })
+    .then(function (data) {
+        query_output_title.innerHTML = "Query Output";
+        query_output_paragraph.innerHTML = DOMPurify.sanitize(JSON.stringify(data));
+        return JSON.stringify(data);
+    })
+}
+
+// add event listener to form
+query_input_form.addEventListener("submit", function(event) {
+    // prevent default behaviour
+    event.preventDefault();
+    // get query from input field
+    var query = query_input_field.value;
+    // send query to server and get response
+    query_output_paragraph.innerHTML = query_surrealdb(query)    
+});
+
+</script>
+
+</html>
