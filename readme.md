@@ -1,0 +1,2 @@
+## About The Project
+SurrealFlask is a Python Library that utilises class structures to easily create data structures using SurrealDB. The idea is to define your DB objects quickly to use them in in your Flask Application. Ideal for PWA, SPA, and IDB. 
