@@ -33,7 +33,7 @@ def query_surrealdb(query):
         response = requests.post(url, headers = headers, data = query, auth=(app.config['SURREALDB'].get('auth').get('username'), app.config['SURREALDB'].get('auth').get('password')))
         output = json.dumps(response.json()[0])
     except Exception as e:
-        output = {"error": "Error in query", "query": query, "response": response.text, "exception": str(e)}
+        output = {"error": "Error in query", "query": query, "exception": str(e)}
     return output
 
 # utility function to run statements
@@ -150,6 +150,11 @@ def create_tables():
     for table in DATABASE_TABLES:
         run_statements(table.create_table_statements())
     return 'Tables created'
+
+@app.route('/api/v1/db/create_indexes', methods=['GET'])
+def create_indexes():
+    # todo - create index method
+    return 'Indexes created'
 
 # create api routes for each table
 for table in DATABASE_TABLES:
