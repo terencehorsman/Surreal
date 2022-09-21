@@ -213,6 +213,9 @@ db = SurrealDB(
     auth = {
         'username': "root",
         'password': "root"
+    },
+    apis_enabled={
+        'info': True
     }
 )
 
