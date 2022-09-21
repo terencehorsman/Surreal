@@ -10,6 +10,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'secret'
 
+
 # class for database connection
 class SurrealDB:
     '''
@@ -258,16 +259,6 @@ user = SurrealDB_Table(
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/test')
-def test():
-    user.write({'name.first': 'John', 'name.last': 'Doe', 'email': 'John.Doe@email.com', 'password': 'password'})
-    return "done!"
-
-# @app.route('/api/v1/db/create_indexes', methods=['GET'])
-# def create_indexes():
-#     # todo - create index method
-#     return 'Indexes created'
 
 if __name__ == '__main__':
     app.run()
