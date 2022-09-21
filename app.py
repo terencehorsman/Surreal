@@ -63,20 +63,20 @@ class SurrealDB:
         }
 
     def query(self, query: str = '', data: dict = {}) -> str:
-        if query == '' and data == {}:
+        if not query and not data:
             return {'error': 'No query provided'}
         elif data:
             if data.get('query'):
                 query = data.get('query')
             else:
                 return {'error': 'No query provided'}
-        output = ""
         try:
+            output = ""
             headers = {'Content-Type': 'application/json', 'NS': self.namespace, 'DB': self.database}
             response = requests.post(self.url, headers = headers, data = query, auth=(self.auth.get('username'), self.auth.get('password')))
             output = json.dumps(response.json()[0])
         except Exception as e:
-            output = {"error": "Error in query", "query": query, "exception": str(e)}
+            output = {"error": "Error in query", "query": str(query), "exception": str(e)}
         return output
 
     def run_statements(self, statements: list) -> None:
