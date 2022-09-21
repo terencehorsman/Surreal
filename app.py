@@ -23,7 +23,7 @@ class SurrealDB:
         namespace (str): namespace of the database
         database (str): database name
         auth (dict): authentication details {'username': 'username', 'password': 'password'}
-        apis_enabled (dict): apis enabled {'info': True}
+        apis_enabled (dict): apis enabled {'info': True, 'query': True, 'create_tables': True}
         database_tables (list): list of database tables
 
     Methods
@@ -35,7 +35,7 @@ class SurrealDB:
         create_tables(): creates tables on the database
     '''
     
-    def __init__(self, name: str, description: str, url: str, namespace: str, database: str, auth: dict, apis_enabled: dict = {'info': True}) -> None:
+    def __init__(self, name: str, description: str, url: str, namespace: str, database: str, auth: dict, apis_enabled: dict = {'info': True, 'query': True, 'create_tables': True}) -> None:
         self.name = name
         self.description = description
         self.url = url
@@ -45,6 +45,8 @@ class SurrealDB:
         self.apis_enabled = apis_enabled
         self.database_tables = []
         app.add_url_rule(self._api_route()+"/info", "db "+self.name+" info", lambda: self._info(), methods=['POST']) if self.apis_enabled['info'] else None
+        app.add_url_rule(self._api_route()+"/query", "db "+self.name+" query", lambda: self.query(request.data, request.get_json()), methods=['POST']) if self.apis_enabled['query'] else None
+        app.add_url_rule(self._api_route()+"/create_tables", "db "+self.name+" create_tables", lambda: self.create_tables(), methods=['POST']) if self.apis_enabled['create_tables'] else None
 
     def _api_route(self) -> str:
         return f"/api/v1/db/{self.name}"
@@ -59,7 +61,14 @@ class SurrealDB:
             'api_route': self._api_route()
         }
 
-    def query(self, query: str) -> str:
+    def query(self, query: str = '', data: dict = {}) -> str:
+        if query == '' and data == {}:
+            return {'error': 'No query provided'}
+        elif data:
+            if data.get('query'):
+                query = data.get('query')
+            else:
+                return {'error': 'No query provided'}
         output = ""
         try:
             headers = {'Content-Type': 'application/json', 'NS': self.namespace, 'DB': self.database}
@@ -215,7 +224,9 @@ db = SurrealDB(
         'password': "root"
     },
     apis_enabled={
-        'info': True
+        'info': True,
+        'query': True,
+        'create_tables': True
     }
 )
 
