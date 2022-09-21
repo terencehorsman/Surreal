@@ -1,6 +1,4 @@
 import json
-from logging.config import valid_ident
-from turtle import update
 import requests
 from flask import Flask, render_template, request
 from datetime import timedelta
