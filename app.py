@@ -2,6 +2,7 @@ import json
 import requests
 from flask import Flask, render_template, request
 from datetime import timedelta
+import subprocess
 
 
 # configure app
@@ -45,9 +46,13 @@ class SurrealDB:
         self.auth = auth
         self.apis_enabled = apis_enabled
         self.database_tables = []
+        self.db_process = None
+        self.db_running = False
         app.add_url_rule(self._api_route()+"/info", "db "+self.name+" info", lambda: self._info(), methods=['POST']) if self.apis_enabled['info'] else None
         app.add_url_rule(self._api_route()+"/query", "db "+self.name+" query", lambda: self.query(request.data, request.get_json()), methods=['POST']) if self.apis_enabled['query'] else None
         app.add_url_rule(self._api_route()+"/create_tables", "db "+self.name+" create_tables", lambda: self.create_tables(), methods=['POST']) if self.apis_enabled['create_tables'] else None
+        app.add_url_rule(self._api_route()+"/start", "db "+self.name+" start", lambda: self.start(), methods=['POST'])
+        app.add_url_rule(self._api_route()+"/stop", "db "+self.name+" stop", lambda: self.stop(), methods=['POST'])
 
     def _api_route(self) -> str:
         return f"/api/v1/db/{self.name}"
@@ -61,6 +66,28 @@ class SurrealDB:
             'database': self.database,
             'api_route': self._api_route()
         }
+
+    def start(self) -> str:
+        if not self.db_process:
+            try:
+                self.db_process = subprocess.Popen(["surreal", "start", "--log", "debug", "--user", self.auth.get('username'), "--pass", self.auth.get('password'), "memory"])
+                self.db_running = True
+                return json.dumps({"status": "started"})
+            except Exception as e:
+                return json.dumps({"status": "error", "error": str(e)})
+        else:
+            return json.dumps({"status": "already running"})
+
+    def stop(self) -> str:
+        if self.db_process:
+            try:
+                self.db_process.terminate()
+                self.db_process = None
+                return json.dumps({"status": "stopped"})
+            except:
+                return json.dumps({"status": "not running"})
+        else:
+            return json.dumps({"status": "not running"})
 
     def query(self, query: str = '', data: dict = {}) -> str:
         if not query and not data:
@@ -87,9 +114,10 @@ class SurrealDB:
                 print("Error in statement: " + statement)
                 pass    
 
-    def create_tables(self) -> None:
+    def create_tables(self) -> str:
         for table in self.database_tables:
             self.run_statements(table._create_table_statements())
+        return json.dumps({"status": "created tables"})
 
 # class for database tables
 class SurrealDB_Table:
@@ -258,7 +286,23 @@ user = SurrealDB_Table(
 # routes
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('home.html')
+
+@app.route('/admin')
+def admin_home():
+    return render_template('admin/admin_home.html')
+
+@app.route('/admin/tables')
+def admin_tables():
+    return render_template('admin/admin_tables.html')
+
+@app.route('/admin/query')
+def admin_query():
+    return render_template('admin/admin_query.html')
+
+@app.route('/admin/settings')
+def admin_settings():
+    return render_template('admin/admin_settings.html')
 
 if __name__ == '__main__':
     app.run()
