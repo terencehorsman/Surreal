@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <h1>Admin Query</h1>
+    <p>Welcome to the Query page.</p>
+    <div id="query_window" class="query-window">
+        <textarea id="query_textarea" class="query-textarea"></textarea>
+        <button id="query_button" class="query-button">Run Query</button>
+    </div>
+    <div id="query_result" class="query-result">
+        <p id="query_result_text" class="query-result-text"></p>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        // initialise variables
+        var query_result_text = document.getElementById("query_result_text");
+        var query_textarea = document.getElementById("query_textarea");
+        var query_button = document.getElementById("query_button");
+
+        // utility function to send api request to surrealdb
+        function query_surrealdb(query){
+            fetch("/api/v1/db/surreal/query", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    query: query,
+                }),
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                return  query_result_text.innerHTML = DOMPurify.sanitize(JSON.stringify(data));
+            })
+        }
+
+        // add event listener to form
+        query_button.addEventListener("click", function(event) {
+            // get query from input field
+            var query = query_textarea.value;
+            // send query to server and get response
+            query_surrealdb(query)    
+        });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <h1 class="title">Admin Home</h1>
+    <p>Welcome to the home page.</p>
+    <div id="admin_buttons" class="admin-buttons">
+        <button id="start_database_button" class="start-database-button">Start Database</button>
+        <button id="stop_database_button" class="stop-database-button">Stop Database</button>
+        <button id="create_tables_button" class="create-tables-button">Create Tables</button>
+        <button id="create_test_data_button" class="create-test-data-button">Create Test Data</button>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        var start_database_button = document.getElementById("start_database_button");
+        var create_tables_button = document.getElementById("create_tables_button");
+        var create_test_data_button = document.getElementById("create_test_data_button");
+        var stop_database_button = document.getElementById("stop_database_button");
+
+        // event listener for start database button
+        start_database_button.addEventListener("click", function(event) {
+            // send request to start database
+            fetch("/api/v1/db/surreal/start", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                return  console.log(data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        });
+
+        // event listener for start database button
+        stop_database_button.addEventListener("click", function(event) {
+            // send request to start database
+            fetch("/api/v1/db/surreal/stop", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                return  console.log(data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        });
+
+        // event listener for create tables button
+        create_tables_button.addEventListener("click", function(event) {
+            // send request to create tables
+            fetch("/api/v1/db/surreal/create_tables", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                return  console.log(data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        });
+    </script>
+{% endblock %}

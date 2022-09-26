@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div id="app-container" class="app-container">
+        <nav id="app-header" class="app-header">
+            <ul>
+                <li>
+                    <a href="/admin">Home</a>
+                </li>
+                <li>
+                    <a href="/admin/tables">Tables</a>
+                </li>
+                <li>
+                    <a href="/admin/query">Query</a>
+                </li>
+                <li>
+                    <a href="/admin/settings">Settings</a>
+                </li>
+                <li style="float: right;" class="app-title">
+                    <a>SurrealDB Admin Panel</a>
+                </li>
+            </ul>
+        </nav>
+        <div id="app-content" class="app-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js" integrity="sha512-/hVAZO5POxCKdZMSLefw30xEVwjm94PAV9ynjskGbIpBvHO9EBplEcdUlBdCKutpZsF+La8Ag4gNrG0gAOn3Ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+{% block js %}{% endblock %}
+
+</html>
